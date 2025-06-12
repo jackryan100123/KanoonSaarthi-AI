@@ -25,15 +25,13 @@ const DocumentQuery: React.FC<DocumentQueryProps> = ({ documentText }) => {
   const [messages, setMessages] = useState<Message[]>([]);
   const [isLoading, setIsLoading] = useState(false);
   const [selectedLanguage, setSelectedLanguage] = useState<Language>('english');
-  const messagesEndRef = useRef<HTMLDivElement>(null);
-
-  const scrollToBottom = () => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  };
+  const lastMessageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    scrollToBottom();
-  }, [messages]);
+    if (lastMessageRef.current) {
+      lastMessageRef.current.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
+  }, [messages, isLoading]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -90,11 +88,11 @@ Please provide a well-structured response that combines document analysis with l
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="bg-gradient-to-br from-white to-amber-50 rounded-2xl shadow-xl border-2 border-amber-100 p-8 relative overflow-hidden"
+      className="bg-gradient-to-br from-white to-primary-50 rounded-2xl shadow-xl border-2 border-primary-100 p-8 relative overflow-hidden"
     >
       {/* Background Pattern */}
       <div className="absolute inset-0 opacity-5">
-        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iYSIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIj48cGF0aCBkPSJtMCAwaDYwdjYwaC02MHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJtMCA2MGg2MG0tMzAtNjB2NjAiIHN0cm9rZT0iI2Y1OWUwYiIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiBmaWxsPSJ1cmwoI2EpIi8+PC9zdmc+')]"></div>
+        <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iYSIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIj48cGF0aCBkPSJtMCAwaDYwdjYwaC02MHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJtMCA2MGg2MG0tMzAtNjB2NjAiIHN0cm9rZT0iIzYzNjZmMSIgc3Ryb2tlLXdpZHRoPSIxIiBvcGFjaXR5PSIuMSIvPjwvcGF0dGVybj48L2RlZnM+PHJlY3Qgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIiBmaWxsPSJ1cmwoI2EpIi8+PC9zdmc+')]"></div>
       </div>
 
       {/* Floating Elements */}
@@ -103,26 +101,26 @@ Please provide a well-structured response that combines document analysis with l
         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
         className="absolute top-4 right-4"
       >
-        <Sparkles className="h-6 w-6 text-amber-400" />
+        <Sparkles className="h-6 w-6 text-primary-400" />
       </motion.div>
 
       <div className="relative">
         <div className="flex items-center justify-between mb-8">
           <div className="flex items-center space-x-4">
-            <div className="bg-gradient-to-r from-amber-500 to-orange-600 p-3 rounded-full">
+            <div className="bg-gradient-to-r from-primary-500 to-secondary-600 p-3 rounded-full">
               <MessageSquare className="h-6 w-6 text-white" />
             </div>
             <div>
               <h2 className="text-2xl font-bold text-gray-900">Ask Legal Questions</h2>
-              <p className="text-amber-700">Get AI-powered answers about your document</p>
+              <p className="text-primary-700">Get AI-powered answers about your document</p>
             </div>
           </div>
           <div className="flex items-center space-x-3">
-            <Globe className="h-5 w-5 text-amber-600" />
+            <Globe className="h-5 w-5 text-primary-600" />
             <select
               value={selectedLanguage}
               onChange={(e) => setSelectedLanguage(e.target.value as Language)}
-              className="bg-white border-2 border-amber-200 text-amber-800 text-sm rounded-xl focus:ring-amber-500 focus:border-amber-500 px-3 py-2 font-medium"
+              className="bg-white border-2 border-primary-200 text-primary-800 text-sm rounded-xl focus:ring-primary-500 focus:border-primary-500 px-3 py-2 font-medium"
             >
               {Object.entries(languageLabels).map(([value, label]) => (
                 <option key={value} value={value}>
@@ -133,62 +131,66 @@ Please provide a well-structured response that combines document analysis with l
           </div>
         </div>
         
-        <div className="space-y-4 mb-6 max-h-[500px] overflow-y-auto bg-gradient-to-b from-amber-50/50 to-white rounded-xl p-4 border border-amber-200">
+        <div className="space-y-4 mb-6 max-h-[500px] overflow-y-auto bg-gradient-to-b from-primary-50/50 to-white rounded-xl p-4 border border-primary-200">
           {messages.length === 0 && (
             <div className="text-center py-8">
-              <Scale className="h-12 w-12 text-amber-400 mx-auto mb-4" />
+              <Scale className="h-12 w-12 text-primary-400 mx-auto mb-4" />
               <p className="text-gray-600">Ask questions about your legal document to get detailed analysis and relevant legal insights.</p>
             </div>
           )}
           
-          {messages.map((message, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
-            >
-              <div
-                className={`max-w-[85%] rounded-2xl p-4 ${
-                  message.role === 'user'
-                    ? 'bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-tr-md'
-                    : 'bg-white border-2 border-amber-100 text-gray-900 rounded-tl-md shadow-sm'
-                }`}
+          {messages.map((message, index) => {
+            const isLast = index === messages.length - 1;
+            return (
+              <motion.div
+                key={index}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className={`flex ${message.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                ref={isLast ? lastMessageRef : undefined}
               >
-                <div className="flex items-center space-x-2 mb-2">
-                  {message.role === 'user' ? (
-                    <User className="h-4 w-4" />
-                  ) : (
-                    <Scale className="h-4 w-4 text-amber-600" />
-                  )}
-                  <span className="text-xs font-semibold">
-                    {message.role === 'user' ? 'You' : 'KanoonSarthi-AI'}
-                  </span>
+                <div
+                  className={`max-w-[85%] rounded-2xl p-4 ${
+                    message.role === 'user'
+                      ? 'bg-gradient-to-r from-primary-500 to-secondary-600 text-white rounded-tr-md'
+                      : 'bg-white border-2 border-primary-100 text-gray-900 rounded-tl-md shadow-sm'
+                  }`}
+                >
+                  <div className="flex items-center space-x-2 mb-2">
+                    {message.role === 'user' ? (
+                      <User className="h-4 w-4" />
+                    ) : (
+                      <Scale className="h-4 w-4 text-primary-600" />
+                    )}
+                    <span className="text-xs font-semibold">
+                      {message.role === 'user' ? 'You' : 'KanoonSarthi-AI'}
+                    </span>
+                  </div>
+                  <p className="whitespace-pre-wrap text-sm leading-relaxed">{message.content}</p>
                 </div>
-                <p className="whitespace-pre-wrap text-sm leading-relaxed">{message.content}</p>
-              </div>
-            </motion.div>
-          ))}
+              </motion.div>
+            );
+          })}
           
           {isLoading && (
             <motion.div
               initial={{ opacity: 0, y: 10 }}
               animate={{ opacity: 1, y: 0 }}
               className="flex justify-start"
+              ref={lastMessageRef}
             >
-              <div className="bg-white border-2 border-amber-100 rounded-2xl rounded-tl-md p-4 shadow-sm">
+              <div className="bg-white border-2 border-primary-100 rounded-2xl rounded-tl-md p-4 shadow-sm">
                 <div className="flex items-center space-x-2 mb-2">
-                  <Scale className="h-4 w-4 text-amber-600" />
-                  <span className="text-xs font-semibold text-amber-700">KanoonSarthi-AI</span>
+                  <Scale className="h-4 w-4 text-primary-600" />
+                  <span className="text-xs font-semibold text-primary-700">KanoonSarthi-AI</span>
                 </div>
                 <div className="flex items-center space-x-2">
-                  <Loader2 className="h-5 w-5 animate-spin text-amber-600" />
+                  <Loader2 className="h-5 w-5 animate-spin text-primary-600" />
                   <span className="text-sm text-gray-600">Analyzing your question...</span>
                 </div>
               </div>
             </motion.div>
           )}
-          <div ref={messagesEndRef} />
         </div>
 
         <form onSubmit={handleSubmit} className="flex space-x-3">
@@ -197,13 +199,13 @@ Please provide a well-structured response that combines document analysis with l
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={`Ask a question about the document... (${languageLabels[selectedLanguage]})`}
-            className="flex-1 rounded-xl border-2 border-amber-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm transition-all duration-200"
+            className="flex-1 rounded-xl border-2 border-primary-200 px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white/80 backdrop-blur-sm transition-all duration-200"
             disabled={isLoading}
           />
           <button
             type="submit"
             disabled={isLoading || !query.trim()}
-            className="bg-gradient-to-r from-amber-500 to-orange-600 text-white rounded-xl px-6 py-3 hover:from-amber-600 hover:to-orange-700 focus:outline-none focus:ring-2 focus:ring-amber-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
+            className="bg-gradient-to-r from-primary-500 to-secondary-600 text-white rounded-xl px-6 py-3 hover:from-primary-600 hover:to-secondary-700 focus:outline-none focus:ring-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all duration-200 shadow-lg hover:shadow-xl transform hover:scale-105"
           >
             <Send className="h-5 w-5" />
           </button>

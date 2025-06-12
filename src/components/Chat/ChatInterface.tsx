@@ -160,9 +160,9 @@ const ChatInterface: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-col h-[calc(100vh-10rem)] md:h-[calc(100vh-8rem)] bg-white rounded-2xl shadow-2xl overflow-hidden border border-amber-100">
+    <div className="flex flex-col h-[calc(100vh-10rem)] md:h-[calc(100vh-8rem)] bg-white rounded-2xl shadow-2xl overflow-hidden border border-primary-100">
       {/* Chat Header */}
-      <div className="bg-gradient-to-r from-amber-600 to-orange-600 text-white p-6 relative overflow-hidden">
+      <div className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white p-6 relative overflow-hidden">
         <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZGVmcz48cGF0dGVybiBpZD0iYSIgcGF0dGVyblVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgd2lkdGg9IjYwIiBoZWlnaHQ9IjYwIj48cGF0aCBkPSJtMCAwaDYwdjYwaC02MHoiIGZpbGw9Im5vbmUiLz48cGF0aCBkPSJtMCA2MGg2MG0tMzAtNjB2NjAiIHN0cm9rZT0iI2ZmZiIgc3Ryb2tlLXdpZHRoPSIwLjUiIG9wYWNpdHk9Ii4xIi8+PC9wYXR0ZXJuPjwvZGVmcz48cmVjdCB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIGZpbGw9InVybCgjYSkiLz48L3N2Zz4=')] opacity-10"></div>
         <div className="relative flex justify-between items-center">
           <div className="flex items-center space-x-4">
@@ -171,7 +171,7 @@ const ChatInterface: React.FC = () => {
             </div>
             <div>
               <h2 className="text-xl font-bold">{t('app.name')}</h2>
-              <p className="text-amber-100 text-sm">{t('app.tagline')}</p>
+              <p className="text-primary-100 text-sm">{t('app.tagline')}</p>
             </div>
           </div>
           <Button
@@ -189,7 +189,7 @@ const ChatInterface: React.FC = () => {
       {/* Messages Container */}
       <div 
         ref={messagesContainerRef}
-        className="flex-1 overflow-y-auto p-6 space-y-6 bg-gradient-to-b from-amber-50/30 to-white scroll-smooth"
+        className="flex-1 overflow-y-auto p-6 space-y-6 bg-gradient-to-b from-primary-50/30 to-white scroll-smooth"
       >
         {currentConversation?.messages && currentConversation.messages.length > 0 ? (
           currentConversation.messages.map((message) => (
@@ -205,7 +205,7 @@ const ChatInterface: React.FC = () => {
         ) : (
           <div className="flex items-center justify-center h-full text-gray-500">
             <div className="text-center">
-              <Scale className="h-12 w-12 mx-auto mb-4 text-amber-400" />
+              <Scale className="h-12 w-12 mx-auto mb-4 text-primary-400" />
               <p className="text-lg font-medium">{t('chat.welcome') || 'Welcome to Legal AI Assistant'}</p>
               <p className="text-sm mt-2">{t('chat.startConversation') || 'Start a conversation by typing your legal question below'}</p>
             </div>
@@ -231,7 +231,7 @@ const ChatInterface: React.FC = () => {
       </div>
 
       {/* Input Area */}
-      <div className="border-t border-amber-100 p-6 bg-gradient-to-r from-amber-50 to-orange-50">
+      <div className="border-t border-primary-100 p-6 bg-gradient-to-r from-primary-50 to-secondary-50">
         <form onSubmit={handleSubmit} className="flex space-x-4">
           <div className="flex-1 relative">
             <textarea
@@ -239,7 +239,7 @@ const ChatInterface: React.FC = () => {
               onChange={(e) => setInputValue(e.target.value)}
               onKeyDown={handleKeyDown}
               placeholder={t('chat.placeholder') || 'Ask your legal question...'}
-              className="w-full resize-none border-2 border-amber-200 rounded-xl p-4 pr-12 focus:outline-none focus:ring-2 focus:ring-amber-500 focus:border-transparent bg-white/80 backdrop-blur-sm transition-all duration-200 placeholder-gray-500"
+              className="w-full resize-none border-2 border-primary-200 rounded-xl p-4 pr-12 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent bg-white/80 backdrop-blur-sm transition-all duration-200 placeholder-gray-500"
               rows={1}
               disabled={loading}
             />
@@ -261,7 +261,7 @@ const ChatInterface: React.FC = () => {
                 variant={isListening ? 'danger' : 'outline'}
                 className={`!border-2 ${isListening 
                   ? '!bg-red-500 !border-red-500 !text-white' 
-                  : '!border-amber-300 !text-amber-600 hover:!bg-amber-50'
+                  : '!border-primary-300 !text-primary-600 hover:!bg-primary-50'
                 }`}
                 onClick={toggleListening}
                 icon={isListening ? <MicOff className="h-5 w-5" /> : <Mic className="h-5 w-5" />}
@@ -276,7 +276,7 @@ const ChatInterface: React.FC = () => {
               type="submit"
               disabled={!inputValue.trim() || loading}
               isLoading={loading}
-              className="!bg-gradient-to-r !from-amber-500 !to-orange-600 hover:!from-amber-600 hover:!to-orange-700 !text-white !border-0 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
+              className="!bg-gradient-to-r !from-primary-500 !to-secondary-600 hover:!from-primary-600 hover:!to-secondary-700 !text-white !border-0 shadow-lg hover:shadow-xl transform hover:scale-105 transition-all duration-200"
               icon={<Send className="h-5 w-5" />}
             >
               {t('chat.send') || 'Send'}
@@ -295,7 +295,7 @@ const ChatInterface: React.FC = () => {
             <button
               key={index}
               onClick={() => handleSuggestionClick(suggestion)}
-              className="text-xs bg-white/60 hover:bg-white/80 text-amber-700 px-3 py-1 rounded-full border border-amber-200 hover:border-amber-300 transition-all duration-200"
+              className="text-xs bg-white/60 hover:bg-white/80 text-primary-700 px-3 py-1 rounded-full border border-primary-200 hover:border-primary-300 transition-all duration-200"
               disabled={loading}
             >
               {suggestion}

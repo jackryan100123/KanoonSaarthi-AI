@@ -13,7 +13,7 @@ const Hero: React.FC = () => {
       {/* 3D Background with Indian Law Theme */}
       <div className="absolute inset-0">
         {/* Gradient Background */}
-        <div className="absolute inset-0 bg-gradient-to-br from-amber-900 via-orange-800 to-red-900"></div>
+        <div className="absolute inset-0 bg-gradient-to-br from-primary-900 via-secondary-800 to-accent-900"></div>
         
         {/* Animated Pattern Overlay */}
         <div className="absolute inset-0 opacity-10">
@@ -47,15 +47,15 @@ const Hero: React.FC = () => {
                 top: `${20 + i * 10}%`
               }}
             >
-              <Scale className="h-8 w-8 text-amber-300" />
+              <Scale className="h-8 w-8 text-primary-300" />
             </motion.div>
           ))}
         </div>
 
         {/* Geometric Shapes */}
-        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-amber-400/20 to-orange-500/20 rounded-full blur-xl"></div>
-        <div className="absolute bottom-20 right-10 w-40 h-40 bg-gradient-to-br from-orange-400/20 to-red-500/20 rounded-full blur-xl"></div>
-        <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-gradient-to-br from-yellow-400/20 to-amber-500/20 rounded-full blur-lg"></div>
+        <div className="absolute top-20 left-10 w-32 h-32 bg-gradient-to-br from-primary-400/20 to-secondary-500/20 rounded-full blur-xl"></div>
+        <div className="absolute bottom-20 right-10 w-40 h-40 bg-gradient-to-br from-secondary-400/20 to-accent-500/20 rounded-full blur-xl"></div>
+        <div className="absolute top-1/2 left-1/4 w-24 h-24 bg-gradient-to-br from-primary-400/20 to-secondary-500/20 rounded-full blur-lg"></div>
       </div>
       
       <div className="container mx-auto px-4 relative z-10">
@@ -74,8 +74,8 @@ const Hero: React.FC = () => {
                 transition={{ duration: 0.6, delay: 0.2 }}
                 className="inline-flex items-center space-x-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-6"
               >
-                <Sparkles className="h-4 w-4 text-amber-300" />
-                <span className="text-amber-100 text-sm font-medium">AI-Powered Legal Assistant</span>
+                <Sparkles className="h-4 w-4 text-primary-300" />
+                <span className="text-primary-100 text-sm font-medium">AI-Powered Legal Assistant</span>
               </motion.div>
 
               <motion.h1 
@@ -84,13 +84,13 @@ const Hero: React.FC = () => {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.3 }}
               >
-                <span className="bg-gradient-to-r from-amber-300 via-yellow-300 to-orange-300 bg-clip-text text-transparent">
+                <span className="text-white">
                   {t('home.hero.title')}
                 </span>
               </motion.h1>
               
               <motion.p 
-                className="text-xl md:text-2xl text-amber-100 mb-8 max-w-2xl leading-relaxed"
+                className="text-xl md:text-2xl text-primary-100 mb-8 max-w-2xl leading-relaxed"
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.8, delay: 0.4 }}
@@ -107,7 +107,7 @@ const Hero: React.FC = () => {
                 <Link to="/chat">
                   <Button 
                     size="lg" 
-                    className="!bg-gradient-to-r !from-amber-500 !to-orange-600 hover:!from-amber-600 hover:!to-orange-700 !text-white !border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 !px-8 !py-4"
+                    className="!bg-gradient-to-r !from-primary-500 !to-secondary-600 hover:!from-primary-600 hover:!to-secondary-700 !text-white !border-0 shadow-xl hover:shadow-2xl transform hover:scale-105 transition-all duration-300 !px-8 !py-4"
                     icon={<MessageSquare className="h-5 w-5" />}
                   >
                     {t('home.hero.cta')}
@@ -132,16 +132,16 @@ const Hero: React.FC = () => {
                 className="grid grid-cols-3 gap-6 mt-12 pt-8 border-t border-white/20"
               >
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-amber-300">1000+</div>
-                  <div className="text-sm text-amber-100">Legal Sections</div>
+                  <div className="text-2xl font-bold text-primary-300">1000+</div>
+                  <div className="text-sm text-primary-100">Legal Sections</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-amber-300">24/7</div>
-                  <div className="text-sm text-amber-100">AI Support</div>
+                  <div className="text-2xl font-bold text-primary-300">24/7</div>
+                  <div className="text-sm text-primary-100">AI Support</div>
                 </div>
                 <div className="text-center">
-                  <div className="text-2xl font-bold text-amber-300">3+</div>
-                  <div className="text-sm text-amber-100">Languages</div>
+                  <div className="text-2xl font-bold text-primary-300">3+</div>
+                  <div className="text-sm text-primary-100">Languages</div>
                 </div>
               </motion.div>
             </motion.div>
@@ -158,7 +158,7 @@ const Hero: React.FC = () => {
               <div className="relative transform perspective-1000 rotate-y-12">
                 <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl overflow-hidden border border-white/20">
                   {/* Chat Header */}
-                  <div className="bg-gradient-to-r from-amber-600 to-orange-600 p-4 flex items-center">
+                  <div className="bg-gradient-to-r from-primary-600 to-secondary-600 p-4 flex items-center">
                     <div className="flex space-x-2">
                       <div className="h-3 w-3 rounded-full bg-red-400"></div>
                       <div className="h-3 w-3 rounded-full bg-yellow-400"></div>
@@ -175,10 +175,10 @@ const Hero: React.FC = () => {
                       transition={{ duration: 0.6, delay: 0.8 }}
                       className="flex justify-start mb-4"
                     >
-                      <div className="bg-gradient-to-r from-amber-100 to-orange-100 rounded-lg rounded-tl-none p-4 max-w-[80%] border border-amber-200">
+                      <div className="bg-gradient-to-r from-primary-100 to-secondary-100 rounded-lg rounded-tl-none p-4 max-w-[80%] border border-primary-200">
                         <div className="flex items-center space-x-2 mb-2">
-                          <Scale className="h-4 w-4 text-amber-600" />
-                          <span className="text-xs font-medium text-amber-800">KanoonSarthi-AI</span>
+                          <Scale className="h-4 w-4 text-primary-600" />
+                          <span className="text-xs font-medium text-primary-800">KanoonSarthi-AI</span>
                         </div>
                         <p className="text-gray-800">🙏 Welcome! I can help you with Indian legal queries. What would you like to know?</p>
                       </div>
@@ -190,7 +190,7 @@ const Hero: React.FC = () => {
                       transition={{ duration: 0.6, delay: 1 }}
                       className="flex justify-end mb-4"
                     >
-                      <div className="bg-gradient-to-r from-amber-600 to-orange-600 text-white rounded-lg rounded-tr-none p-4 max-w-[80%]">
+                      <div className="bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-lg rounded-tr-none p-4 max-w-[80%]">
                         <p>What are the provisions for cybercrime under BNS?</p>
                       </div>
                     </motion.div>
@@ -201,16 +201,16 @@ const Hero: React.FC = () => {
                       transition={{ duration: 0.6, delay: 1.2 }}
                       className="flex justify-start"
                     >
-                      <div className="bg-gradient-to-r from-amber-100 to-orange-100 rounded-lg rounded-tl-none p-4 max-w-[80%] border border-amber-200">
+                      <div className="bg-gradient-to-r from-primary-100 to-secondary-100 rounded-lg rounded-tl-none p-4 max-w-[80%] border border-primary-200">
                         <div className="flex items-center space-x-2 mb-2">
-                          <Scale className="h-4 w-4 text-amber-600" />
-                          <span className="text-xs font-medium text-amber-800">KanoonSarthi-AI</span>
+                          <Scale className="h-4 w-4 text-primary-600" />
+                          <span className="text-xs font-medium text-primary-800">KanoonSarthi-AI</span>
                         </div>
                         <p className="text-gray-800">Under BNS 2023, cybercrime provisions are covered in Chapter XI...</p>
                         <div className="flex space-x-1 mt-2">
-                          <div className="w-2 h-2 bg-amber-400 rounded-full animate-bounce"></div>
-                          <div className="w-2 h-2 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
-                          <div className="w-2 h-2 bg-amber-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
+                          <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce"></div>
+                          <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '0.1s' }}></div>
+                          <div className="w-2 h-2 bg-primary-400 rounded-full animate-bounce" style={{ animationDelay: '0.2s' }}></div>
                         </div>
                       </div>
                     </motion.div>
@@ -221,7 +221,7 @@ const Hero: React.FC = () => {
                 <motion.div
                   animate={{ y: [-10, 10, -10] }}
                   transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute -top-4 -right-4 bg-gradient-to-r from-amber-400 to-orange-500 p-3 rounded-full shadow-lg"
+                  className="absolute -top-4 -right-4 bg-gradient-to-r from-primary-400 to-secondary-500 p-3 rounded-full shadow-lg"
                 >
                   <Scale className="h-6 w-6 text-white" />
                 </motion.div>
@@ -229,7 +229,7 @@ const Hero: React.FC = () => {
                 <motion.div
                   animate={{ y: [10, -10, 10] }}
                   transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
-                  className="absolute -bottom-4 -left-4 bg-gradient-to-r from-orange-400 to-red-500 p-2 rounded-full shadow-lg"
+                  className="absolute -bottom-4 -left-4 bg-gradient-to-r from-secondary-400 to-accent-500 p-2 rounded-full shadow-lg"
                 >
                   <Sparkles className="h-4 w-4 text-white" />
                 </motion.div>

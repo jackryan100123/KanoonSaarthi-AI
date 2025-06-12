@@ -23,12 +23,12 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
       viewport={{ once: true }}
       whileHover={{ y: -5 }}
     >
-      <Card hoverable className="h-full bg-gradient-to-br from-white to-amber-50 border-2 border-amber-100 shadow-lg hover:shadow-xl transition-all duration-300">
+      <Card hoverable className="h-full bg-gradient-to-br from-white to-primary-50 border-2 border-primary-100 shadow-lg hover:shadow-xl transition-all duration-300">
         <div className="p-8 text-center">
           <motion.div
             whileHover={{ scale: 1.1, rotate: 5 }}
             transition={{ duration: 0.3 }}
-            className="bg-gradient-to-r from-amber-500 to-orange-600 rounded-full p-4 inline-block mb-6 text-white shadow-lg"
+            className="bg-gradient-to-r from-primary-500 to-secondary-600 rounded-full p-4 inline-block mb-6 text-white shadow-lg"
           >
             {icon}
           </motion.div>
@@ -36,7 +36,7 @@ const FeatureCard: React.FC<FeatureCardProps> = ({
           <p className="text-gray-700 leading-relaxed">{description}</p>
           
           {/* Decorative Element */}
-          <div className="mt-6 w-12 h-1 bg-gradient-to-r from-amber-400 to-orange-500 mx-auto rounded-full"></div>
+          <div className="mt-6 w-12 h-1 bg-gradient-to-r from-primary-400 to-secondary-500 mx-auto rounded-full"></div>
         </div>
       </Card>
     </motion.div>
