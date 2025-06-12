@@ -2,6 +2,7 @@ import React from 'react';
 import { Message } from '../../types';
 import { Scale, User } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { sanitize } from '../../utils/sanitize';
 
 interface ChatMessageProps {
   message: Message;
@@ -70,7 +71,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message }) => {
             className={`text-sm leading-relaxed ${
               isUser ? 'text-white' : 'text-gray-800'
             }`}
-            dangerouslySetInnerHTML={{ __html: formatMessage(message.content) }}
+            dangerouslySetInnerHTML={{ __html: sanitize(formatMessage(message.content)) }}
           />
           <div
             className={`text-xs mt-2 ${

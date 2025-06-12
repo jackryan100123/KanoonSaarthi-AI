@@ -130,8 +130,8 @@ const Features: React.FC = () => {
               <div className="bg-gradient-to-r from-blue-500 to-cyan-600 p-3 rounded-full w-fit mx-auto mb-4">
                 <Sparkles className="h-6 w-6 text-white" />
               </div>
-              <h4 className="font-semibold text-gray-900 mb-2">Real-time Updates</h4>
-              <p className="text-sm text-gray-600">Always current with the latest amendments and legal changes</p>
+              <h4 className="font-semibold text-gray-900 mb-2">Document Analysis</h4>
+              <p className="text-sm text-gray-600">AI powered document analysis and summarization</p>
             </div>
             
             <div className="text-center p-6 bg-white/60 rounded-2xl border border-primary-100">

@@ -7,8 +7,15 @@ import ChatPage from './pages/ChatPage';
 import DownloadsPage from './pages/DownloadsPage';
 import ContactPage from './pages/ContactPage';
 import DocumentAnalysis from './pages/DocumentAnalysis';
+import { useEffect } from 'react';
 
 function App() {
+  useEffect(() => {
+    if (window.top !== window.self) {
+      window.top.location = window.self.location;
+    }
+  }, []);
+
   return (
     <LanguageProvider>
       <ChatProvider>
