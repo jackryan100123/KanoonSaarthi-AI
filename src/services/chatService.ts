@@ -1,4 +1,5 @@
 import axios from 'axios';
+import { extractFeatures, QueryFeatures } from '../utils/extractFeatures';
 
 const API_KEY = import.meta.env.VITE_GROQ_API_KEY;
 
@@ -185,7 +186,7 @@ const performFallbackAnalysis = (userQuery: string): QueryAnalysis => {
     intent = 'sop_forms';
   }
 
-  // Detect law types
+  // Detect law types with strict word boundaries
   let primaryLaw: LawType | undefined;
   let secondaryLaw: LawType | undefined;
   let preferredLawType: 'current' | 'previous' | 'both' = 'current';
@@ -221,7 +222,7 @@ const performFallbackAnalysis = (userQuery: string): QueryAnalysis => {
   const sectionMatch = queryLower.match(/section (\d+)/);
   const specificSection = sectionMatch ? sectionMatch[1] : undefined;
 
-    return {
+  return {
     keywords,
     category: 'legal',
     primaryLaw,
@@ -406,6 +407,20 @@ const filterAndRankSections = (
   return filteredSections;
 };
 
+// Utility to convert QueryFeatures to QueryAnalysis
+function featuresToAnalysis(features: QueryFeatures): QueryAnalysis {
+  return {
+    keywords: features.keywords,
+    category: 'legal',
+    primaryLaw: features.law as LawType | undefined,
+    secondaryLaw: undefined,
+    intent: (features.intent as QueryIntent) || 'general',
+    isComparison: features.intent === 'comparison',
+    specificSection: features.section,
+    preferredLawType: features.law && ['BNS', 'BNSS', 'BSA'].includes(features.law) ? 'current' : (features.law ? 'previous' : 'both'),
+  };
+}
+
 // Enhanced response generation
 export const processLegalResponse = async (
   userQuery: string,
@@ -415,21 +430,24 @@ export const processLegalResponse = async (
   try {
     if (!API_KEY) throw new Error('GROQ API key is not configured');
 
-    // 1. Analyze the query
-    const analysis = await extractKeywords(userQuery);
-    
+    // 1. Extract features for explicit law/section
+    const features = extractFeatures(userQuery);
+    const analysis = featuresToAnalysis(features);
+
     // 2. Filter and rank sections
     const rankedSections = filterAndRankSections(allSections, analysis, userQuery);
-    
-    // 3. Select top sections (limit based on query type)
-    const maxSections = analysis.isComparison ? 10 : 8; // Reduced from 20/15 to 10/8
+    const maxSections = features.intent === 'comparison' ? 10 : 8;
     const topSections = rankedSections.slice(0, maxSections);
 
-    if (topSections.length === 0) {
-      return "I couldn't find any relevant legal sections for your query. Please try rephrasing your question or provide more specific details.";
+    if (features.law && features.section && topSections.length === 0) {
+      return `No section ${features.section} found in ${features.law}.`;
     }
 
-    // 4. Prepare sections data for AI with content truncation
+    if (topSections.length === 0) {
+      return await getGeneralResponse(userQuery, conversationHistory);
+    }
+
+    // 3. Prepare sections data for AI with content truncation
     const sectionsData = topSections.map((section, index) => ({
       rank: index + 1,
       law_type: section.law_type,
@@ -437,44 +455,25 @@ export const processLegalResponse = async (
       section_number: section.section_number,
       section_title: section.section_title,
       content: Array.isArray(section.content) 
-        ? section.content.join(' ').substring(0, 500) // Truncate content to 500 chars
+        ? section.content.join(' ').substring(0, 500)
         : (section.content || '').substring(0, 500),
       relevance_score: section.relevanceScore,
       confidence_level: section.confidenceLevel,
       match_type: section.matchType,
       intent_match: section.intentMatch,
       is_new_law: section.is_new_law,
-      keyword_matches: section.keywordMatches.slice(0, 5) // Limit to top 5 keyword matches
+      keyword_matches: section.keywordMatches.slice(0, 5)
     }));
 
-    // 5. Build conversation context (limit to last 2 messages)
+    // 4. Build conversation context (limit to last 2 messages)
     const conversationContext = conversationHistory.length > 0 
       ? `\n\nCONVERSATION HISTORY:\n${conversationHistory.slice(-2).map(msg => `${msg.role.toUpperCase()}: ${msg.content}`).join('\n\n')}\n\n`
       : '';
 
-    // 6. Prepare the prompt with reduced data
-    const prompt = `You are an AI assistant specialized in Indian law analysis. Analyze the following query and relevant legal sections to provide a comprehensive response.
+    // 5. Improved prompt for Groq API with explicit rules
+    const prompt = `You are an AI assistant specialized in Indian law analysis.\n\nRULES:\n- Always extract the law (BNS, BNSS, BSA, IPC, CrPC, IEA) and section number from the user query if present.\n- Never mix up laws: If the user asks for BNSS, only use BNSS data. If BNS, only use BNS data, etc.\n- If both law and section are present, only answer if that section exists in that law.\n- For comparison queries, compare only the laws mentioned in the query.\n- Never answer about a law or section that is not present in the user query.\n- If no relevant section is found, say so clearly.\n- Always search the correct law database.\n\n---\n\n**USER QUERY:**\n${userQuery}\n\n**RELEVANT SECTIONS:**\n${sectionsData.map(section => `\n📜 ${section.law_name} - Section ${section.section_number}\n*Title:* ${section.section_title}\n*Content:* ${section.content}\n*Relevance:* ${section.relevance_score} (${section.confidence_level} confidence)\n`).join('\n')}\n${conversationContext}\n\n---\n\n**Instructions:**\n- Directly answer the user's question using the relevant sections.\n- Use markdown formatting: headings, bullet points, bold for key terms.\n- Cite section numbers and law names.\n- Explain legal concepts in simple language.\n- Highlight key points and practical implications.\n- If comparing laws, clearly show differences and current applicability.\n- Make the response easy to read and actionable for a non-lawyer.\n`;
 
-USER QUERY: "${userQuery}"
-
-RELEVANT SECTIONS:
-${sectionsData.map(section => `
-📜 ${section.law_name} - Section ${section.section_number}
-Title: ${section.section_title}
-Content: ${section.content}
-Relevance: ${section.relevance_score} (${section.confidence_level} confidence)
-`).join('\n')}${conversationContext}
-
-Provide a detailed response that:
-1. Directly answers the user's question using information from the relevant sections
-2. Cites specific section numbers when referencing laws
-3. Explains legal concepts in clear, simple language
-4. Highlights key points and practical implications
-5. If comparing laws, clearly show differences and current applicability
-
-Format your response with appropriate markdown headings and bullet points for clarity.`;
-
-    // 7. Make the API request with reduced max_tokens
+    // 6. Make the API request
     const response = await axios.post(
       'https://api.groq.com/openai/v1/chat/completions',
       {
@@ -489,7 +488,7 @@ Format your response with appropriate markdown headings and bullet points for cl
             content: prompt
           }
         ],
-        max_tokens: 1000, // Reduced from default
+        max_tokens: 1000,
         temperature: 0.7,
       },
       {
@@ -505,7 +504,7 @@ Format your response with appropriate markdown headings and bullet points for cl
 
   } catch (error) {
     console.error('Error processing legal response:', error);
-    return "I apologize, but I encountered an error while processing your legal query. Please try rephrasing your question or try again later.";
+    return await getGeneralResponse(userQuery, conversationHistory);
   }
 };
 
@@ -534,9 +533,25 @@ const generateAnalysisFooter = (sections: EnhancedSection[], analysis: QueryAnal
 
 // Enhanced general response function
 const getGeneralResponse = async (userQuery: string, conversationHistory: Array<{role: string, content: string}> = []): Promise<string> => {
+  // Special case: "what is [law]" queries
+  const lawMap = {
+    BNS: 'Bharatiya Nyaya Sanhita (BNS) 2023 is a comprehensive criminal code that replaces the Indian Penal Code (IPC) in India. It aims to modernize and consolidate criminal law provisions for a more effective justice system.',
+    BNSS: 'Bharatiya Nagarik Suraksha Sanhita (BNSS) 2023 is a new criminal procedure code that replaces the Code of Criminal Procedure (CrPC) in India. It focuses on streamlining criminal procedures, ensuring speedy justice, and protecting citizens\' rights.',
+    BSA: 'Bharatiya Sakshya Adhiniyam (BSA) 2023 is a new evidence act that replaces the Indian Evidence Act (IEA) in India. It modernizes the rules of evidence for digital and traditional cases.',
+    IPC: 'The Indian Penal Code (IPC) 1860 was the main criminal code of India, now replaced by the Bharatiya Nyaya Sanhita (BNS) 2023.',
+    CrPC: 'The Code of Criminal Procedure (CrPC) 1973 was the main criminal procedure code of India, now replaced by the Bharatiya Nagarik Suraksha Sanhita (BNSS) 2023.',
+    IEA: 'The Indian Evidence Act (IEA) 1872 was the main evidence law of India, now replaced by the Bharatiya Sakshya Adhiniyam (BSA) 2023.'
+  };
+  const lawKeys = Object.keys(lawMap);
+  const match = userQuery.match(/what is (bns|bnss|bsa|ipc|crpc|iea)\b/i);
+  if (match) {
+    const law = match[1].toUpperCase();
+    return `### What is ${law}?\n${lawMap[law as keyof typeof lawMap]}`;
+  }
+
+  // Default: use AI for general response
   try {
     if (!API_KEY) throw new Error('GROQ API key is not configured');
-
     const response = await axios.post(
       'https://api.groq.com/openai/v1/chat/completions',
       {
@@ -544,30 +559,11 @@ const getGeneralResponse = async (userQuery: string, conversationHistory: Array<
         messages: [
           {
             role: 'system',
-            content: `You are an expert legal assistant specializing in Indian law. Provide clear, helpful responses about legal concepts, procedures, and general legal information.
-
-When explaining legal concepts:
-1. Use simple, clear language
-2. Provide practical examples
-3. Explain both current and previous laws when relevant
-4. Include relevant section numbers when applicable
-5. Format your response with markdown for better readability
-
-Current Laws (2023):
-- BNS (Bharatiya Nyaya Sanhita) - replaced IPC
-- BNSS (Bharatiya Nagarik Suraksha Sanhita) - replaced CrPC
-- BSA (Bharatiya Sakshya Adhiniyam) - replaced IEA
-
-Previous Laws:
-- IPC (Indian Penal Code) - replaced by BNS
-- CrPC (Code of Criminal Procedure) - replaced by BNSS
-- IEA (Indian Evidence Act) - replaced by BSA`
+            content: `You are an expert legal assistant specializing in Indian law. Provide clear, helpful responses about legal concepts, procedures, and general legal information.\n\nWhen explaining legal concepts:\n1. Use simple, clear language\n2. Provide practical examples\n3. Explain both current and previous laws when relevant\n4. Include relevant section numbers when applicable\n5. Format your response with markdown for better readability\n\nCurrent Laws (2023):\n- BNS (Bharatiya Nyaya Sanhita) - replaced IPC\n- BNSS (Bharatiya Nagarik Suraksha Sanhita) - replaced CrPC\n- BSA (Bharatiya Sakshya Adhiniyam) - replaced IEA\n\nPrevious Laws:\n- IPC (Indian Penal Code) - replaced by BNS\n- CrPC (Code of Criminal Procedure) - replaced by BNSS\n- IEA (Indian Evidence Act) - replaced by BSA`
           },
           {
             role: 'user',
-            content: `Please explain: "${userQuery}"
-
-${conversationHistory.length > 0 ? `\nConversation context:\n${conversationHistory.slice(-2).map(msg => `${msg.role.toUpperCase()}: ${msg.content}`).join('\n')}` : ''}`
+            content: `Please explain: "${userQuery}"\n\n${conversationHistory.length > 0 ? `\nConversation context:\n${conversationHistory.slice(-2).map(msg => `${msg.role.toUpperCase()}: ${msg.content}`).join('\n')}` : ''}`
           }
         ],
         max_tokens: 1000,
@@ -580,7 +576,6 @@ ${conversationHistory.length > 0 ? `\nConversation context:\n${conversationHisto
         },
       }
     );
-
     return response.data.choices[0].message.content || "I apologize, but I couldn't generate a response. Please try rephrasing your question.";
   } catch (error) {
     console.error('Error generating general response:', error);
@@ -591,24 +586,29 @@ ${conversationHistory.length > 0 ? `\nConversation context:\n${conversationHisto
 // Main processing function
 export const processUnifiedQuery = async (
   userQuery: string,
-  searchFunction: (keywords: string[]) => any[],
+  searchFunction: (features: QueryFeatures) => any[],
   conversationHistory: Array<{role: string, content: string}> = []
 ): Promise<string> => {
   try {
-    // Step 1: Analyze the query
-    const analysis = await extractKeywords(userQuery);
-    
-    // Step 2: Search for relevant sections
-    const allSections = searchFunction(analysis.keywords);
-    
+    // Step 1: Extract features
+    const features = extractFeatures(userQuery);
+    // Step 2: Search for relevant sections (ensure all JSONs are queried)
+    const allSections = searchFunction(features);
     // Step 3: Route based on analysis
-    if (analysis.category === 'legal' && allSections.length > 0) {
+    if (features.law && features.section && allSections.length > 0) {
+      // Strict section query
       return await processLegalResponse(userQuery, allSections, conversationHistory);
     }
-    
-    // Step 4: Handle general queries or when no specific sections found
+    if (features.law && allSections.length > 0) {
+      // Law summary or law-specific query
+      return await processLegalResponse(userQuery, allSections, conversationHistory);
+    }
+    if (allSections.length > 0) {
+      // General legal query
+      return await processLegalResponse(userQuery, allSections, conversationHistory);
+    }
+    // Always fall back to general response if no relevant sections or ambiguous
     return await getGeneralResponse(userQuery, conversationHistory);
-    
   } catch (error) {
     console.error('Error in unified query processing:', error);
     return "I apologize, but I encountered an error while processing your query. Please try again or rephrase your question.";
@@ -622,7 +622,7 @@ export class ChatService {
 
   public async processQuery(
     query: string, 
-    searchFunction: (keywords: string[]) => any[],
+    searchFunction: (features: QueryFeatures) => any[],
     conversationHistory: Array<{role: string, content: string}> = []
   ): Promise<string> {
     return await processUnifiedQuery(query, searchFunction, conversationHistory);

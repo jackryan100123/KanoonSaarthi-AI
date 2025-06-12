@@ -9,6 +9,7 @@ import bsa from '../data/laws/bsa.json';
 import crpc from '../data/laws/crpc.json';
 import iea from '../data/laws/iea.json';
 import { GoogleGenerativeAI } from '@google/generative-ai';
+import { extractFeatures, QueryFeatures } from '../utils/extractFeatures';
 
 const GEMINI_API_KEY = import.meta.env.VITE_GEMINI_API_KEY;
 
@@ -46,8 +47,8 @@ interface ChatContextType {
 const ChatContext = createContext<ChatContextType | undefined>(undefined);
 
 // Enhanced search function with comprehensive law coverage
-const searchSectionsByKeywords = (keywords: string[]) => {
-  const lowerKeywords = keywords.map(k => k.toLowerCase());
+const searchSectionsByFeatures = (features: QueryFeatures) => {
+  const lowerKeywords = features.keywords.map(k => k.toLowerCase());
   const allSections: any[] = [];
   
   // Helper function to add sections from any law file
@@ -255,7 +256,18 @@ const searchSectionsByKeywords = (keywords: string[]) => {
     return scoreDiff;
   });
   
-  return scoredSections;
+  let filteredSections = scoredSections;
+  if (features.law) {
+    filteredSections = filteredSections.filter(section => section.law_type === features.law);
+  }
+  if (features.section) {
+    filteredSections = filteredSections.filter(section => String(section.section_number) === features.section);
+  }
+  // Strict: If both law and section are specified, only return if exact match exists
+  if (features.law && features.section && filteredSections.length === 0) {
+    return [];
+  }
+  return filteredSections;
 };
 
 // Enhanced semantic matching with more legal terms
@@ -344,7 +356,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
 
     const welcomeMessage: Message = {
       id: uuidv4(),
-      content: '⚖️ **Welcome to Legal Assistant!**\n\nI can help you with questions about Indian laws, particularly the Bharatiya Nyaya Sanhita (BNS) and Indian Penal Code (IPC). I can also analyze uploaded legal documents like FIRs and complaints.\n\n**Examples of what you can ask:**\n- "What is section 1 about?"\n- "Tell me about definitions"\n- "What are the preliminary provisions?"\n- "What is murder under BNS?"\n- "Compare murder in BNS and IPC"\n- "Tell me about theft"\n- "Differences between BNS and IPC"\n\n**Document Analysis:**\n- Upload FIRs, complaints, or legal documents\n- Ask questions about uploaded documents\n- Get relevant legal sections for your case\n\nI maintain conversation context, so you can ask follow-up questions that reference our previous discussion!\n\nPlease ask your question or upload a document!',
+      content: '⚖️ **Welcome to Legal Assistant!**\n\nI can help you with questions about Indian laws, particularly the Bharatiya Nyaya Sanhita (BNS) and Indian Penal Code (IPC). ',
       role: 'assistant',
       timestamp: new Date(),
     };
@@ -403,7 +415,7 @@ export const ChatProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
         // Otherwise, use the unified chat service
         aiResponseContent = await processUnifiedQuery(
           content,
-          searchSectionsByKeywords,
+          searchSectionsByFeatures,
           buildConversationHistory(currentConversation?.messages || [])
         );
       }
@@ -628,7 +640,7 @@ ${conversationHistory.slice(-3).map(msg => `${msg.role.toUpperCase()}: ${msg.con
 
     const welcomeMessage: Message = {
       id: uuidv4(),
-      content: '⚖️ **Welcome to Legal Assistant!**\n\nI can help you with questions about Indian laws, particularly the Bharatiya Nyaya Sanhita (BNS) and Indian Penal Code (IPC). I can also analyze uploaded legal documents like FIRs and complaints.\n\n**Examples of what you can ask:**\n- "What is section 1 about?"\n- "Tell me about definitions"\n- "What are the preliminary provisions?"\n- "What is murder under BNS?"\n- "Compare murder in BNS and IPC"\n- "Tell me about theft"\n- "Differences between BNS and IPC"\n\n**Document Analysis:**\n- Upload FIRs, complaints, or legal documents\n- Ask questions about uploaded documents\n- Get relevant legal sections for your case\n\nI maintain conversation context, so you can ask follow-up questions that reference our previous discussion!\n\nPlease ask your question or upload a document!',
+      content: '⚖️ **Welcome to Legal Assistant!**\n\nI can help you with questions about Indian laws, particularly the Bharatiya Nyaya Sanhita (BNS) and Indian Penal Code (IPC).',
       role: 'assistant',
       timestamp: new Date(),
     };
