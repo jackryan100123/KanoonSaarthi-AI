@@ -1,0 +1,99 @@
+{
+  "app": {
+    "name": "KanoonSarthi-AI",
+    "description": "Your intelligent legal companion",
+    "tagline": "Legal. Knowledge. At your command."
+  },
+  "nav": {
+    "home": "Home",
+    "chat": "Chat",
+    "documentAnalysis": "Document Analysis",
+    "downloads": "Downloads",
+    "contact": "Contact"
+  },
+  "home": {
+    "hero": {
+      "title": "KanoonSarthi-AI",
+      "subtitle": "Your intelligent legal companion powered by AI. Get instant access to Indian legal information, analyze documents, and navigate the complexities of law with confidence.",
+      "cta": "Start Legal Consultation"
+    },
+    "features": {
+      "title": "Comprehensive Legal Solutions",
+      "search": {
+        "title": "Smart Legal Search",
+        "description": "AI-powered search through BNS, BNSS, BSA and legacy codes with contextual understanding"
+      },
+      "voice": {
+        "title": "Voice Recognition",
+        "description": "Speak your legal queries naturally in multiple Indian languages"
+      },
+      "multilingual": {
+        "title": "Multilingual Support",
+        "description": "Access legal information in Hindi, English, and regional languages"
+      },
+      "downloads": {
+        "title": "Legal Resources",
+        "description": "Download essential legal documents, forms, and procedural guides"
+      }
+    },
+    "about": {
+      "title": "About KanoonSarthi-AI",
+      "description": "KanoonSarthi-AI is an advanced AI-powered legal assistant designed specifically for the Indian legal system. Built with cutting-edge technology, it provides instant access to legal codes, case analysis, and procedural guidance. Whether you're a legal professional, law enforcement officer, or citizen seeking legal clarity, KanoonSarthi-AI is your trusted companion in navigating India's legal landscape."
+    }
+  },
+  "chat": {
+    "placeholder": "Ask your legal question here...",
+    "send": "Send",
+    "voice": "Use voice",
+    "listening": "Listening...",
+    "welcome": "🙏 Welcome to KanoonSarthi-AI! I'm your intelligent legal companion, ready to assist you with Indian law queries, document analysis, and legal guidance. How may I help you today?",
+    "examples": {
+      "title": "Try asking:",
+      "questions": [
+        "What is section 302 of BNS?",
+        "Explain cybercrime laws in India",
+        "What are the penalties for traffic violations?",
+        "How to file an FIR online?"
+      ]
+    }
+  },
+  "downloads": {
+    "title": "Legal Resource Library",
+    "subtitle": "Access comprehensive collection of Indian legal documents, acts, and procedural guides",
+    "search": "Search legal resources...",
+    "categories": {
+      "all": "All Resources",
+      "bns": "BNS",
+      "bnss": "BNSS",
+      "bsa": "BSA",
+      "sop": "SOPs",
+      "forms": "Legal Forms",
+      "punjabi": "ਪੰਜਾਬੀ"
+    },
+    "downloadBtn": "Download",
+    "noResults": "No legal resources found matching your criteria."
+  },
+  "contact": {
+    "title": "Contact Legal Support",
+    "subtitle": "Get in touch with our legal assistance team",
+    "form": {
+      "name": "Your Name",
+      "email": "Email Address",
+      "subject": "Subject",
+      "message": "Your Legal Query",
+      "submit": "Send Message",
+      "success": "Your message has been sent successfully!",
+      "error": "There was an error sending your message. Please try again."
+    },
+    "emergency": {
+      "title": "Emergency Legal Helplines",
+      "description": "For immediate legal assistance, contact these emergency numbers:"
+    }
+  },
+  "footer": {
+    "rights": "All Rights Reserved",
+    "disclaimer": "This is an AI-powered legal assistance service. For official legal advice, consult qualified legal professionals.",
+    "privacy": "Privacy Policy",
+    "terms": "Terms of Service"
+  }
+}
